@@ -1,3 +1,4 @@
+const fs = require('fs');
 const http = require('http');
 const https = require('https');
 const express = require('express');
@@ -8,8 +9,6 @@ const expressValidator = require('express-validator');
 const flash = require('connect-flash');
 const session = require('express-session');
 
-
-
 mongoose.connect('mongodb://localhost/nodekb',{ useNewUrlParser: true });
 let db =  mongoose.connection;
 
@@ -19,8 +18,6 @@ db.once('open', () => console.log('Connected to MongoDB'));
 db.on('error', (err) => console.log(err));
 // Init App
 const app = express();
-const http = require('http');
-const https = require('https');
 
 // Certificate
 const privateKey = fs.readFileSync('/etc/letsencrypt/live/athebe.com/privkey.pem', 'utf8');
