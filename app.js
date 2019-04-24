@@ -1,3 +1,5 @@
+const http = require('http');
+const https = require('https');
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
@@ -17,7 +19,20 @@ db.once('open', () => console.log('Connected to MongoDB'));
 db.on('error', (err) => console.log(err));
 // Init App
 const app = express();
-const port = 3000;
+const http = require('http');
+const https = require('https');
+
+// Certificate
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/athebe.com/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/athebe.com/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/athebe.com/chain.pem', 'utf8');
+
+const credentials = {
+	key: privateKey,
+	cert: certificate,
+	ca: ca
+};
+
 let Article = require('./models/article');
 
 // Load view engine
@@ -81,5 +96,14 @@ app.get('/', (req, res) => {
 let articles = require('./routes/articles');
 app.use('/articles', articles);
 
-// Start
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+// Starting both http & https servers
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
+
+httpServer.listen(80, () => {
+	console.log('HTTP Server running on port 80');
+});
+
+httpsServer.listen(443, () => {
+	console.log('HTTPS Server running on port 443');
+});
